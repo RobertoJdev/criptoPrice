@@ -1,25 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'home/home_page.dart';
-import 'home/http/http_page.dart';
+import 'home_page.dart';
 
 void main() {
   runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
+class MyApp extends StatelessWidget {  
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
-      getPages: [
-        GetPage(name: '/', page: () => HomePage(), children: [
-          GetPage(
-            name: '/http',
-            page: () => HttpPage(),
-          )
-        ])
-      ],
+    return MaterialApp(
+      title: 'Cripto Price 2.0',
+      theme: ThemeData(
+        primarySwatch: Colors.amber,
+      ),
+      home: MyHomePage(),
     );
   }
 }
