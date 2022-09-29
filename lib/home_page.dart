@@ -4,37 +4,6 @@ import 'package:intl/intl.dart';
 import 'dart:convert';
 import 'retorno.dart';
 
-class Ticker {
-  Ticker(
-      {this.high,
-      this.low,
-      this.vol,
-      this.last,
-      this.buy,
-      this.sell,
-      this.open,
-      this.date});
-
-  final String high;
-  final String low;
-  final String vol;
-  final String last;
-  final String buy;
-  final String sell;
-  final String open;
-  final String date;
-
-  factory Ticker.fromJson(Map<String, dynamic> json) => Ticker(
-      high: json["high"],
-      low: json["low"],
-      vol: json["vol"],
-      last: json["last"],
-      buy: json["buy"],
-      sell: json["sell"],
-      open: json["open"],
-      date: json["date"]);
-}
-
 class MyHomePage extends StatefulWidget {
   final String title = 'Cripto price';
 
@@ -43,19 +12,40 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  Future<Map> retornoDados() async {
-    var url = Uri.parse('https://www.mercadobitcoin.net/api/ETH/ticker/');
+
+  int cont = 0;
+
+  Future<Map> retornoDados(String coin) async {
+    const eth = 'https://www.mercadobitcoin.net/api/ETH/ticker/';
+    const bit = 'https://www.mercadobitcoin.net/api/BTC/ticker/';
+    const dog = 'https://www.mercadobitcoin.net/api/DOGE/ticker/';
+
+    if (coin == 'bit') {
+      coin = bit;
+      print('bit ' + coin);
+    }
+    if (coin == 'dog') {
+      coin = dog;
+      print('dog ' + coin);
+    }
+    if (coin == '') {
+      coin = eth;
+      print('eth ' + coin);
+    }
+    if (coin == 'eth') {
+      coin = eth;
+      print('eth ' + coin);
+    }
+
+    var url = Uri.parse(coin);
     var response = await http.get(url);
     var json = jsonDecode(response.body);
     json = json['ticker'];
 
     json = Map.castFrom(json);
 
-    //final Ticker ticker = Ticker.fromJson(jsonDecode(response.body));
-
     if (response.statusCode == 200) {
       //var retorno = utf8.decode(response.bodyBytes);
-
       print(json);
       return json;
     } else {
@@ -76,7 +66,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         backgroundColor: Colors.black,
         body: FutureBuilder<Map>(
-          future: retornoDados(),
+          future: retornoDados(''),
           builder: (context, snapshot) {
             if (snapshot.hasError) {
               return Center(child: Text('Erro ao carregar dados'));
@@ -87,6 +77,85 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(0, 0, 0, 10),
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: <Widget>[
+                            Icon(
+                              Icons.currency_bitcoin,
+                              color: Colors.yellowAccent,
+                              size: 100,
+                            ),
+                          ]),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(10, 0, 10, 20),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(4.0),
+                            child: TextButton(
+                              style: TextButton.styleFrom(
+                                backgroundColor: Colors.amber,
+                                foregroundColor: Colors.black87,
+                              ),
+                              onPressed: () {
+                                retornoDados('eth');
+                                setState() {};
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text(' Etherium ',
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold)),
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(4.0),
+                            child: TextButton(
+                              style: TextButton.styleFrom(
+                                backgroundColor: Colors.amber,
+                                foregroundColor: Colors.black87,
+                              ),
+                              onPressed: () {
+                                retornoDados('bit');
+                                setState() {};
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text('   Bitcoin   ',
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold)),
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(4.0),
+                            child: TextButton(
+                              style: TextButton.styleFrom(
+                                backgroundColor: Colors.amber,
+                                foregroundColor: Colors.black87,
+                              ),
+                              onPressed: (){
+                                retornoDados('dog');
+                                setState(){}
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text('  Dogcoin  ',
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold)),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                     mostrarTexto('Última negociação', snapshot.data['last']),
                     mostrarTexto('Maior preço', snapshot.data['high']),
                     mostrarTexto('Menor preço', snapshot.data['low']),
@@ -150,7 +219,7 @@ mostrarTexto(String campo, String valor) {
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.fromLTRB(0, 0, 0, 80),
+          padding: const EdgeInsets.fromLTRB(0, 10, 0, 40),
           child: Column(
             children: [
               Text(
