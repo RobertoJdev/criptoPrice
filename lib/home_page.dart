@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/main.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'dart:convert';
 import 'retorno.dart';
+
+String coin = '';
 
 class MyHomePage extends StatefulWidget {
   final String title = 'Cripto price';
@@ -12,41 +15,39 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  String coin = 'https://www.mercadobitcoin.net/api/ETH/ticker/';
 
-  int cont = 0;
+  Future<Map> retornoDados(String coinTemp) async {
+    //print(coin);
 
-  Future<Map> retornoDados(String coin) async {
     const eth = 'https://www.mercadobitcoin.net/api/ETH/ticker/';
     const bit = 'https://www.mercadobitcoin.net/api/BTC/ticker/';
     const dog = 'https://www.mercadobitcoin.net/api/DOGE/ticker/';
 
-    if (coin == 'bit') {
-      coin = bit;
-      print('bit ' + coin);
-    }
-    if (coin == 'dog') {
-      coin = dog;
-      print('dog ' + coin);
-    }
-    if (coin == '') {
-      coin = eth;
-      print('eth ' + coin);
-    }
-    if (coin == 'eth') {
-      coin = eth;
-      print('eth ' + coin);
+    switch (coinTemp) {
+      case 'eth':
+        coin = eth;
+        break;
+      case 'bit':
+        coin = bit;
+        break;
+      case 'dog':
+        coin = dog;
+        break;
+      default:
+        coin = eth;
     }
 
-    var url = Uri.parse(coin);
+    print(coin);
+
+    Uri url = Uri.parse(coin);
     var response = await http.get(url);
     var json = jsonDecode(response.body);
     json = json['ticker'];
-
     json = Map.castFrom(json);
 
     if (response.statusCode == 200) {
-      //var retorno = utf8.decode(response.bodyBytes);
-      print(json);
+      print('teste');
       return json;
     } else {
       throw Exception('Erro ao carregar API mercado bitcoin');
@@ -77,6 +78,11 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    Text(coin,
+                        style: TextStyle(
+                            color: Colors.orangeAccent,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w300)),
                     Padding(
                       padding: const EdgeInsets.fromLTRB(0, 0, 0, 10),
                       child: Row(
@@ -105,7 +111,8 @@ class _MyHomePageState extends State<MyHomePage> {
                               ),
                               onPressed: () {
                                 retornoDados('eth');
-                                setState() {};
+                                setState(() {
+                                });
                               },
                               child: Padding(
                                 padding: const EdgeInsets.all(8.0),
@@ -124,7 +131,6 @@ class _MyHomePageState extends State<MyHomePage> {
                               ),
                               onPressed: () {
                                 retornoDados('bit');
-                                setState() {};
                               },
                               child: Padding(
                                 padding: const EdgeInsets.all(8.0),
@@ -141,9 +147,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                 backgroundColor: Colors.amber,
                                 foregroundColor: Colors.black87,
                               ),
-                              onPressed: (){
+                              onPressed: () {
                                 retornoDados('dog');
-                                setState(){}
                               },
                               child: Padding(
                                 padding: const EdgeInsets.all(8.0),
@@ -196,7 +201,6 @@ mostrarTexto(String campo, String valor) {
   } else if (campo != 'Última negociação') {
     DateTime parsedDate =
         DateTime.fromMillisecondsSinceEpoch(int.parse(valor) * 1000);
-    print(parsedDate);
     String fdatetime = DateFormat('d-M-y HH:mm:ss').format(parsedDate);
     return Column(
       children: [
